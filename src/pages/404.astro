@@ -1,0 +1,35 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you were looking for does not exist."
+  noindex
+>
+  <section class="not-found">
+    <div class="container">
+      <div class="not-found__inner">
+        <p class="not-found__code" data-reveal>Error / 404</p>
+        <h1 class="not-found__title" data-reveal style="--reveal-delay: 60ms">
+          Lost in the<br /><em>perimeter.</em>
+        </h1>
+        <p class="not-found__text" data-reveal style="--reveal-delay: 120ms">
+          The page you were looking for is not here. It may have moved, or the
+          route may never have existed in the first place.
+        </p>
+        <div class="not-found__actions" data-reveal style="--reveal-delay: 180ms">
+          <a class="btn" href="/">
+            Back to writeups
+            <Icon name="arrow-right" />
+          </a>
+          <a class="text-link" href="/about/">
+            About
+            <Icon name="arrow-up-right" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

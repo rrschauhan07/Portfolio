@@ -1,0 +1,78 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { site } from '@/data/site';
+import Seo from '@/components/Seo.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import '@/styles/global.css';
+
+interface ArticleMeta {
+  publishedTime?: string;
+  modifiedTime?: string;
+  tags?: string[];
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  type?: 'website' | 'article' | 'profile';
+  image?: string;
+  article?: ArticleMeta;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description = site.description,
+  type = 'website',
+  image = '/og.png',
+  article,
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const pageTitle = title
+  ? `${title} — ${site.name}`
+  : `${site.name} — ${site.role} · ${site.discipline}`;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <ClientRouter />
+    <Seo
+      title={pageTitle}
+      description={description}
+      type={type}
+      image={image}
+      article={article}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="grid-guides" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '@/scripts/site';
+    </script>
+  </body>
+</html>

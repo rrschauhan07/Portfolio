@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#08080a"/>
+  <g stroke="#f2eee6" stroke-opacity=".07">
+    <path d="M0 160h1200M0 320h1200M0 480h1200"/>
+    <path d="M160 0v630M480 0v630M800 0v630M1120 0v630"/>
+  </g>
+  <circle cx="985" cy="175" r="235" fill="none" stroke="#f2eee6" stroke-opacity=".13"/>
+  <circle cx="985" cy="175" r="155" fill="none" stroke="#ff5c38" stroke-opacity=".22" stroke-dasharray="4 8"/>
+  <path d="M985 0v350M810 175h350" stroke="#f2eee6" stroke-opacity=".1"/>
+  <rect x="977" y="167" width="16" height="16" fill="#ff5c38"/>
+
+  <g fill="#f2eee6" font-family="'DejaVu Sans', sans-serif">
+    <text x="72" y="86" font-size="16" letter-spacing="4" fill-opacity=".72">RISHI RAJ SINGH CHAUHAN</text>
+    <text x="72" y="112" font-size="13" letter-spacing="2.6" fill="#938e84">CYBERSECURITY · VAPT · SECURITY RESEARCH</text>
+    <rect x="72" y="142" width="44" height="2" fill="#ff5c38"/>
+  </g>
+
+  <g font-family="'DejaVu Serif', Georgia, serif" fill="#f2eee6">
+    <text x="72" y="288" font-size="92" letter-spacing="-3">Finding the flaws</text>
+    <text x="72" y="384" font-size="92" letter-spacing="-3">before they become</text>
+    <text x="72" y="480" font-size="92" letter-spacing="-3">incidents<tspan fill="#ff5c38">.</tspan></text>
+  </g>
+
+  <g font-family="'DejaVu Sans', sans-serif">
+    <text x="72" y="558" font-size="16" fill="#938e84" letter-spacing="1.5">WEB APPLICATIONS</text>
+    <text x="250" y="558" font-size="16" fill="#625e56" letter-spacing="1.5">/</text>
+    <text x="276" y="558" font-size="16" fill="#938e84" letter-spacing="1.5">MOBILE</text>
+    <text x="370" y="558" font-size="16" fill="#625e56" letter-spacing="1.5">/</text>
+    <text x="396" y="558" font-size="16" fill="#938e84" letter-spacing="1.5">THICK CLIENT</text>
+    <text x="548" y="558" font-size="16" fill="#625e56" letter-spacing="1.5">/</text>
+    <text x="574" y="558" font-size="16" fill="#938e84" letter-spacing="1.5">RESEARCH</text>
+    <text x="1128" y="558" text-anchor="end" font-size="14" fill="#625e56" letter-spacing="2">RRS / 001</text>
+  </g>
+</svg>

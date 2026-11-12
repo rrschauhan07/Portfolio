@@ -1,0 +1,34 @@
+---
+import type { Writeup } from '@/lib/content';
+import { formatDate, readingTime, writeupHref } from '@/lib/content';
+import Icon from './Icon.astro';
+
+interface Props {
+  post: Writeup;
+}
+
+const { post } = Astro.props;
+const href = writeupHref(post);
+const minutes = readingTime(post.body);
+---
+
+<a class="note-row" href={href} data-reveal>
+  <div class="note-row__meta">
+    <span>{formatDate(post.data.date)}</span>
+    <span class="note-row__category">{post.data.category}</span>
+    <span>{minutes} min read</span>
+  </div>
+
+  <div>
+    <h3 class="note-row__title">{post.data.title}</h3>
+    <p class="note-row__desc">{post.data.description}</p>
+    <div class="note-row__tags">
+      {post.data.sample && <span>Sample note</span>}
+      {post.data.tags.map((tag) => <span>{tag}</span>)}
+    </div>
+  </div>
+
+  <span class="note-row__arrow" aria-hidden="true">
+    <Icon name="arrow-up-right" />
+  </span>
+</a>

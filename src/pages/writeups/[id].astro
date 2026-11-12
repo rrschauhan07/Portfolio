@@ -1,0 +1,254 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleToc from '@/components/ArticleToc.astro';
+import Icon from '@/components/Icon.astro';
+import { site } from '@/data/site';
+import {
+  formatDate,
+  getAdjacentWriteups,
+  getWriteups,
+  isoDate,
+  readingTime,
+  writeupHref,
+  type Writeup,
+} from '@/lib/content';
+import '@/styles/prose.css';
+
+export async function getStaticPaths() {
+  const posts = await getWriteups();
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: Writeup;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const minutes = readingTime(post.body);
+const { newer, older } = await getAdjacentWriteups(post);
+const allPosts = await getWriteups();
+
+const pageUrl = Astro.url.toString();
+const published = isoDate(post.data.date);
+const modified = isoDate(post.data.updated ?? post.data.date);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: published,
+  dateModified: modified,
+  articleSection: post.data.category,
+  keywords: post.data.tags.join(', '),
+  timeRequired: `PT${minutes}M`,
+  author: {
+    '@type': 'Person',
+    name: site.name,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: site.name,
+  },
+  mainEntityOfPage: pageUrl,
+  isAccessibleForFree: true,
+};
+
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Writeups', item: new URL('/', Astro.site) },
+    { '@type': 'ListItem', position: 2, name: post.data.title, item: pageUrl },
+  ],
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  article={{
+    publishedTime: `${published}T00:00:00Z`,
+    modifiedTime: `${modified}T00:00:00Z`,
+    tags: post.data.tags,
+  }}
+  jsonLd={[schema, breadcrumbs]}
+>
+  <div class="reading-progress" aria-hidden="true">
+    <div class="reading-progress__bar" data-reading-progress></div>
+  </div>
+
+  <article>
+    <section class="article-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Writeups</a>
+          <Icon name="chevron-right" />
+          <span aria-current="page">Note</span>
+        </nav>
+
+        <div class="article-hero__kicker" data-reveal>
+          <span class="tag tag--signal">{post.data.category}</span>
+          {post.data.sample && (
+            <span class="tag tag--status">
+              <span class="status-dot"></span>
+              Sample content
+            </span>
+          )}
+        </div>
+
+        <h1 class="article-hero__title" data-reveal style="--reveal-delay: 60ms">
+          {post.data.title}
+        </h1>
+
+        <p class="article-hero__desc" data-reveal style="--reveal-delay: 120ms">
+          {post.data.description}
+        </p>
+
+        <div class="article-hero__meta" data-reveal style="--reveal-delay: 170ms">
+          <span>
+            <Icon name="calendar" />
+            <time datetime={published}>{formatDate(post.data.date)}</time>
+          </span>
+          <span class="meta-sep"></span>
+          <span>
+            <Icon name="clock" />
+            {minutes} min read
+          </span>
+          <span class="meta-sep"></span>
+          <span>{post.data.tags.slice(0, 3).join(' · ')}</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container article-shell">
+      <aside class="article-sidebar">
+        {toc.length > 0 && (
+          <div class="sidebar-block sidebar-block--toc">
+            <p class="sidebar-label">On this page</p>
+            <nav class="toc" data-toc aria-label="Table of contents">
+              {toc.map((heading) => (
+                <a
+                  class:list={['toc__link', `toc__link--h${heading.depth}`]}
+                  href={`#${heading.slug}`}
+                >
+                  {heading.text}
+                </a>
+              ))}
+            </nav>
+          </div>
+        )}
+
+        <div class="sidebar-block sidebar-block--meta">
+          <p class="sidebar-label">Note details</p>
+          <dl class="sidebar-meta">
+            <div class="sidebar-meta__row">
+              <dt>Published</dt>
+              <dd>{formatDate(post.data.date)}</dd>
+            </div>
+            <div class="sidebar-meta__row">
+              <dt>Reading</dt>
+              <dd>{minutes} min</dd>
+            </div>
+            <div class="sidebar-meta__row">
+              <dt>Category</dt>
+              <dd>{post.data.category}</dd>
+            </div>
+            {post.data.updated && (
+              <div class="sidebar-meta__row">
+                <dt>Updated</dt>
+                <dd>{formatDate(post.data.updated)}</dd>
+              </div>
+            )}
+          </dl>
+        </div>
+
+        <div class="sidebar-block">
+          <button
+            class="share-btn"
+            type="button"
+            data-copy-link={pageUrl}
+            aria-label="Copy a link to this writeup"
+          >
+            <Icon name="copy" />
+            <span data-copy-label>Copy link</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="article-main" data-article-body>
+        {toc.length > 0 && <ArticleToc headings={toc} />}
+
+        {post.data.sample && (
+          <div class="sample-note">
+            Sample article. This note exists to demonstrate the publishing pipeline and
+            editorial layout. Replace it with your own research before launch.
+          </div>
+        )}
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        <div class="article-end">
+          <div class="article-tags">
+            <span class="tag tag--signal">{post.data.category}</span>
+            {post.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+          </div>
+
+          <div class="author-card">
+            <span class="author-card__avatar" aria-hidden="true">{site.initials}</span>
+            <div>
+              <p class="author-card__name">{site.name}</p>
+              <p class="author-card__role">{site.role} · {site.discipline}</p>
+            </div>
+            <a class="author-card__link" href="/about/">About Rishi</a>
+          </div>
+        </div>
+
+        <nav class="post-nav" aria-label="More writeups">
+          {newer ? (
+            <a class="post-nav__item" href={writeupHref(newer)}>
+              <span class="post-nav__label">Newer note</span>
+              <span class="post-nav__title">{newer.data.title}</span>
+            </a>
+          ) : (
+            <span class="post-nav__item">
+              <span class="post-nav__label">Newer note</span>
+              <span class="post-nav__empty">This is the latest note.</span>
+            </span>
+          )}
+
+          {older ? (
+            <a class="post-nav__item post-nav__item--next" href={writeupHref(older)}>
+              <span class="post-nav__label">Older note</span>
+              <span class="post-nav__title">{older.data.title}</span>
+            </a>
+          ) : (
+            <span class="post-nav__item post-nav__item--next">
+              <span class="post-nav__label">Older note</span>
+              <span class="post-nav__empty">This is the first note.</span>
+            </span>
+          )}
+        </nav>
+
+        <div class="article-back">
+          <a class="text-link" href="/">
+            <Icon name="arrow-left" />
+            Back to all writeups
+            <span class="mono" style="color: var(--faint); margin-left: 4px">
+              / {String(allPosts.length).padStart(2, '0')}
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

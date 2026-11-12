@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="admin-token" content="__ADMIN_TOKEN__" />
+    <title>Studio — Rishi Raj Singh Chauhan</title>
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">RRS</span>
+        <span class="brand-copy">
+          <strong>Studio</strong>
+          <small>Local publishing</small>
+        </span>
+      </div>
+
+      <div class="topbar-actions">
+        <span class="local-badge"><span class="local-dot" aria-hidden="true"></span> Local only</span>
+        <a
+          class="button button--ghost"
+          href="http://127.0.0.1:4321/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          View site
+        </a>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Writeups">
+        <div class="sidebar-head">
+          <div>
+            <p class="eyebrow">Writeups</p>
+            <p class="post-count" id="postCount">Loading</p>
+          </div>
+          <button class="button button--primary button--small" type="button" id="newPost">
+            New post
+          </button>
+        </div>
+
+        <div class="post-list" id="postList">
+          <p class="sidebar-status">Loading notes…</p>
+        </div>
+
+        <p class="sidebar-foot">
+          Saved directly to <code>src/content/writeups</code>. Nothing here is deployed.
+        </p>
+      </aside>
+
+      <main class="editor-pane">
+        <div class="editor-head">
+          <div>
+            <p class="eyebrow" id="modeLabel">New writeup</p>
+            <h1 id="editorTitle">New writeup</h1>
+          </div>
+          <span class="save-state" id="saveState">No unsaved changes</span>
+        </div>
+
+        <form id="postForm" novalidate>
+          <div class="field">
+            <label for="title">Title</label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              placeholder="A clear, specific title"
+              autocomplete="off"
+              maxlength="220"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="slug">Slug</label>
+            <div class="slug-field">
+              <span>/writeups/</span>
+              <input
+                id="slug"
+                name="slug"
+                type="text"
+                placeholder="a-clear-specific-title"
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="90"
+                required
+              />
+            </div>
+            <p class="hint" id="slugHint">Lowercase letters, numbers, and hyphens. The URL cannot be changed after saving.</p>
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="2"
+              maxlength="600"
+              placeholder="One or two sentences used on cards, search, and metadata."
+              required
+            ></textarea>
+          </div>
+
+          <div class="field-row field-row--three">
+            <div class="field">
+              <label for="date">Date</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+            <div class="field">
+              <div class="label-row">
+                <label for="category">Category</label>
+                <button
+                  class="label-action"
+                  type="button"
+                  id="manageCategories"
+                  aria-label="Manage categories"
+                  aria-haspopup="dialog"
+                  aria-controls="categoryDialog"
+                >
+                  Manage
+                </button>
+              </div>
+              <select id="category" name="category" required>
+                <option value="">Loading…</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row field-row--options">
+            <div class="field">
+              <label for="tags">Tags</label>
+              <input
+                id="tags"
+                name="tags"
+                type="text"
+                placeholder="recon, web, methodology"
+                autocomplete="off"
+              />
+              <p class="hint">Comma-separated.</p>
+            </div>
+
+            <div class="check-stack">
+              <label class="check">
+                <input id="featured" name="featured" type="checkbox" />
+                <span>
+                  <strong>Feature this note</strong>
+                  <small>The first featured note leads the archive.</small>
+                </span>
+              </label>
+              <label class="check">
+                <input id="sample" name="sample" type="checkbox" />
+                <span>
+                  <strong>Sample content</strong>
+                  <small>Shows a visible sample-content label.</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="editor-label">
+            <label for="body">Body</label>
+            <span class="hint">Markdown / MDX</span>
+          </div>
+          <textarea
+            id="body"
+            name="body"
+            class="body-editor"
+            placeholder="## Start with a useful heading&#10;&#10;Write the note here…"
+            spellcheck="true"
+            required
+          ></textarea>
+          <p class="hint">
+            The page title comes from the Title field. Start the body at <code>##</code>.
+          </p>
+
+          <div class="form-actions">
+            <div>
+              <button class="button button--danger" type="button" id="deletePost" hidden>
+                Delete
+              </button>
+            </div>
+            <div class="actions-right">
+              <a
+                class="button button--ghost"
+                id="previewLink"
+                href="http://127.0.0.1:4321/"
+                target="_blank"
+                rel="noreferrer"
+                hidden
+              >
+                Preview
+              </a>
+              <button class="button button--primary" type="submit" id="savePost">
+                Save note
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <footer class="workspace-footer">
+          <p>
+            Saving writes the file locally. Commit and push to publish it to the static site.
+          </p>
+          <p>
+            Run <code>npm run dev</code> for a live preview. Drafts are included only in local
+            development.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <dialog class="category-dialog" id="categoryDialog" aria-labelledby="categoryDialogTitle">
+      <div class="category-dialog__inner">
+        <div class="category-dialog__head">
+          <div>
+            <p class="eyebrow">Taxonomy</p>
+            <h2 id="categoryDialogTitle">Manage categories</h2>
+          </div>
+          <button class="button button--ghost button--small" type="button" id="closeCategoryDialog">
+            Close
+          </button>
+        </div>
+
+        <p class="category-dialog__intro">
+          Add your own categories. A category still used by a writeup can’t be deleted until that
+          writeup is reassigned or removed.
+        </p>
+
+        <form class="category-add" id="categoryForm">
+          <label class="visually-hidden" for="newCategory">New category</label>
+          <input
+            id="newCategory"
+            type="text"
+            placeholder="e.g. Cloud Security"
+            autocomplete="off"
+            maxlength="60"
+            required
+          />
+          <button class="button button--primary button--small" type="submit" id="addCategory">
+            Add
+          </button>
+        </form>
+
+        <p class="category-message" id="categoryMessage" role="status" aria-live="polite"></p>
+        <ul class="category-list" id="categoryList" aria-label="Categories"></ul>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/admin.js" defer></script>
+  </body>
+</html>

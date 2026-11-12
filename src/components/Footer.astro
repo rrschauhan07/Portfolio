@@ -1,0 +1,53 @@
+---
+import { site } from '@/data/site';
+import Icon from './Icon.astro';
+import LogoMark from './LogoMark.astro';
+
+const year = new Date().getFullYear();
+const path = Astro.url.pathname;
+const isWriteupsPath = path === '/' || path.startsWith('/writeups/');
+const isCurrent = (href: string) =>
+  href === '/' ? isWriteupsPath : path.startsWith(href);
+---
+
+<footer class="site-footer">
+  <div class="container footer-main">
+    <a class="footer-brand" href="/" aria-label={`${site.name} — writeups`}>
+      <LogoMark class="footer-brand__mark" />
+      <span>
+        <span class="footer-brand__name">{site.handle}</span>
+        <span class="footer-brand__role">{site.discipline}</span>
+      </span>
+    </a>
+
+    <nav class="footer-nav" aria-label="Footer">
+      {site.nav.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+      <a href="/rss.xml">
+        RSS
+        <Icon name="rss" />
+      </a>
+      <a href={`mailto:${site.email}`}>
+        Email
+        <Icon name="mail" />
+      </a>
+      {site.socials.map((social) => (
+        <a href={social.href} rel="me noopener noreferrer" target="_blank">
+          {social.label}
+          <Icon name={social.icon} />
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <div class="container footer-bottom">
+    <span>© {year} {site.handle}</span>
+    <a class="to-top" href="#main">
+      Back to top
+      <Icon name="arrow-up" />
+    </a>
+  </div>
+</footer>

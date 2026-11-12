@@ -1,0 +1,44 @@
+---
+import type { Writeup } from '@/lib/content';
+import { formatDate, readingTime, writeupHref } from '@/lib/content';
+import Icon from './Icon.astro';
+
+interface Props {
+  post: Writeup;
+  label?: string;
+}
+
+const { post, label = 'Featured note' } = Astro.props;
+const href = writeupHref(post);
+const minutes = readingTime(post.body);
+---
+
+<a class="note-featured" href={href} data-reveal>
+  <div class="note-featured__content">
+    <div class="note-featured__kicker">
+      <span class="eyebrow">{label}</span>
+      <span class="tag tag--signal">{post.data.category}</span>
+      {post.data.sample && <span class="tag tag--status">Sample</span>}
+    </div>
+
+    <h3 class="note-featured__title">{post.data.title}</h3>
+    <p class="note-featured__desc">{post.data.description}</p>
+
+    <div class="note-featured__footer">
+      <span>{formatDate(post.data.date)}</span>
+      <span>·</span>
+      <span>{minutes} min read</span>
+      <span class="text-link" style="margin-left: auto">
+        Read the writeup
+        <Icon name="arrow-up-right" />
+      </span>
+    </div>
+  </div>
+
+  <div class="note-featured__aside">
+    <div class="note-aside-meta">
+      <span>{post.data.category}</span>
+      <span>{post.data.tags.slice(0, 2).join(' · ') || 'Field notes'}</span>
+    </div>
+  </div>
+</a>

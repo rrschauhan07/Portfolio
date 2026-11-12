@@ -1,0 +1,130 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import { site } from '@/data/site';
+import { projects } from '@/data/projects';
+
+const siteUrl = Astro.site ?? new URL('https://your-domain.com');
+const profileSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: {
+    '@type': 'Person',
+    name: site.name,
+    jobTitle: site.role,
+    description: site.description,
+    url: siteUrl.toString(),
+    sameAs: site.socials.map((social) => social.href),
+  },
+};
+---
+
+<BaseLayout
+  title="About"
+  description="About Rishi Raj Singh Chauhan — a cybersecurity professional focused on vulnerability assessment and penetration testing for web, mobile, and thick-client applications."
+  jsonLd={profileSchema}
+>
+  <section class="page-hero">
+    <div class="container page-hero__inner">
+      <div>
+        <p class="eyebrow" data-reveal>About <span class="sep">/</span> Profile</p>
+        <h1
+          class="page-hero__title page-hero__title--intro"
+          aria-label={`Hi, I am ${site.name} from India`}
+          data-reveal
+          style="--reveal-delay: 70ms"
+        >
+          <span class="intro-line">Hi, I am</span>
+          <span class="intro-line">{site.name}</span>
+          <span class="intro-line intro-line--from">
+            from<svg
+              class="india-flag"
+              viewBox="0 0 60 60"
+              role="img"
+              aria-label="India"
+              focusable="false"
+            >
+              <defs>
+                <clipPath id="india-flag-clip">
+                  <circle cx="30" cy="30" r="29.5"></circle>
+                </clipPath>
+              </defs>
+              <g clip-path="url(#india-flag-clip)">
+                <rect width="60" height="20" fill="#ff9933"></rect>
+                <rect y="20" width="60" height="20" fill="#f4f1e8"></rect>
+                <rect y="40" width="60" height="20" fill="#138808"></rect>
+                <g fill="none" stroke="#000080">
+                  <circle cx="30" cy="30" r="6.2" stroke-width="1.1"></circle>
+                  <path
+                    d="M30 23.8v12.4M23.8 30h12.4M25.6 25.6l8.8 8.8M34.4 25.6l-8.8 8.8"
+                    stroke-width=".65"></path>
+                  <circle cx="30" cy="30" r="1.2" fill="#000080" stroke="none"></circle>
+                </g>
+              </g>
+              <circle
+                cx="30"
+                cy="30"
+                r="29.25"
+                fill="none"
+                stroke="rgba(242, 238, 230, 0.38)"
+                stroke-width="1.5"></circle>
+            </svg>
+          </span>
+        </h1>
+      </div>
+
+      <div class="page-hero__aside" data-reveal style="--reveal-delay: 110ms">
+        <p>
+          A cybersecurity professional working across vulnerability assessment and
+          penetration testing, with a practice grounded in understanding how a system
+          behaves before deciding how it can fail.
+        </p>
+        <a class="text-link" href={`mailto:${site.email}`} style="margin-top: 22px">
+          Get in touch
+          <Icon name="mail" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="projects-heading">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div>
+          <p class="eyebrow">
+            Projects <span class="sep">/</span>
+            {String(projects.length).padStart(2, '0')}
+          </p>
+          <h2 class="section-head__title" id="projects-heading">
+            Project <em>showcase.</em>
+          </h2>
+        </div>
+        <div class="section-head__aside">
+          <p>
+            Three tracks, one practice: find the bug, prove the impact, and explain the
+            fix.
+          </p>
+        </div>
+      </div>
+
+      <div class="focus-grid">
+        {projects.map((project, index) => (
+          <article
+            class="focus-card"
+            data-reveal
+            style={`--reveal-delay: ${80 + index * 50}ms`}
+          >
+            <p class="focus-card__index">{String(index + 1).padStart(2, '0')}</p>
+            <h3 class="focus-card__title">{project.title}</h3>
+            <p class="focus-card__desc">{project.description}</p>
+            <div class="focus-card__tags">
+              {project.tags.map((tag) => (
+                <span>{tag}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

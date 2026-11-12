@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string;
+  size?: number;
+}
+
+const { class: className, size = 32 } = Astro.props;
+const width = Math.round(size * (400 / 512));
+---
+
+<img
+  src="/brand/rrsc-dragon-emblem.png"
+  width={width}
+  height={size}
+  alt=""
+  aria-hidden="true"
+  decoding="async"
+  class={className}
+/>

@@ -1,0 +1,72 @@
+---
+import { site } from '@/data/site';
+import Icon from './Icon.astro';
+import LogoMark from './LogoMark.astro';
+
+const path = Astro.url.pathname;
+const isWriteupsPath = path === '/' || path.startsWith('/writeups/');
+const isCurrent = (href: string) =>
+  href === '/' ? isWriteupsPath : path.startsWith(href);
+const aboutItem = site.nav.find((item) => item.href === '/about/');
+const headerSocials = site.socials.filter(
+  (social) => social.label === 'LinkedIn' || social.label === 'X',
+);
+---
+
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label={`${site.name} — writeups`}>
+      <LogoMark class="brand__mark" />
+      <span class="brand__text">
+        <span class="brand__name">{site.handle}</span>
+      </span>
+    </a>
+
+    <div class="header-end">
+      <nav class="desktop-nav" aria-label="Primary">
+        {site.nav.map((item) => (
+          <a
+            class="nav-link"
+            href={item.href}
+            aria-current={isCurrent(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <nav class="mobile-nav" aria-label="Mobile">
+        {aboutItem && (
+          <a
+            class="nav-link"
+            href={aboutItem.href}
+            aria-current={isCurrent(aboutItem.href) ? 'page' : undefined}
+          >
+            {aboutItem.label}
+          </a>
+        )}
+      </nav>
+
+      <nav class="header-socials" aria-label="Social links">
+        <a
+          class="header-icon-link header-mail"
+          href={`mailto:${site.email}`}
+          aria-label={`Email ${site.name}`}
+        >
+          <Icon name="mail" />
+        </a>
+        {headerSocials.map((social) => (
+          <a
+            class="header-icon-link"
+            href={social.href}
+            target="_blank"
+            rel="me noopener noreferrer"
+            aria-label={`${social.label} — ${site.name}`}
+          >
+            <Icon name={social.icon} />
+          </a>
+        ))}
+      </nav>
+    </div>
+  </div>
+</header>

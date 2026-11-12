@@ -1,0 +1,32 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+---
+
+<details class="mobile-toc">
+  <summary>
+    <span>On this page</span>
+    <span class="mobile-toc__count">
+      {String(headings.length).padStart(2, '0')} {headings.length === 1 ? 'section' : 'sections'}
+    </span>
+  </summary>
+  <nav class="toc" data-toc aria-label="On this page">
+    {headings.map((heading) => (
+      <a
+        class:list={['toc__link', `toc__link--h${heading.depth}`]}
+        href={`#${heading.slug}`}
+      >
+        {heading.text}
+      </a>
+    ))}
+  </nav>
+</details>
