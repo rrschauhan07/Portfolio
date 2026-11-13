@@ -129,7 +129,7 @@ const breadcrumbs = {
     </section>
 
     <div class="container article-shell">
-      <aside class="article-sidebar">
+      <div class="article-sidebar">
         {toc.length > 0 && (
           <div class="sidebar-block sidebar-block--toc">
             <p class="sidebar-label">On this page</p>
@@ -181,7 +181,7 @@ const breadcrumbs = {
             <span data-copy-label>Copy link</span>
           </button>
         </div>
-      </aside>
+      </div>
 
       <div class="article-main" data-article-body>
         {toc.length > 0 && <ArticleToc headings={toc} />}
