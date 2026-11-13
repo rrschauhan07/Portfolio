@@ -131,7 +131,8 @@ content.
 2. Choose **Sign In with Token**.
 3. Use the token-generation link shown on the login screen, or create a
    fine-grained personal access token at
-   <https://github.com/settings/personal-access-tokens/new>.
+   <https://github.com/settings/personal-access-tokens/new>. GitHub may ask you
+   to confirm access (sudo mode) with 2FA before it will create a token.
 4. Scope it to **only** the `rrschauhan07/Portfolio` repository and grant:
    - **Contents: Read and write** — required for reading, committing, and
      uploading media.
