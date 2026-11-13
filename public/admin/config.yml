@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+#
+# The dashboard is a static Sveltia CMS page. Publishing commits directly to
+# this repository and the existing GitHub Actions workflow rebuilds the site.
+#
+# Sign in with a fine-grained GitHub token scoped to this repository:
+#   Contents: Read and write
+#   Pull requests: Read and write (only needed if editorial workflow is enabled)
+#
+# The token is stored in the browser's local storage. Do not sign in on a
+# shared computer.
+
+site_url: https://rrschauhan07.tech
+display_url: https://rrschauhan07.tech
+logo:
+  src: https://rrschauhan07.tech/brand/rrsc-dragon-emblem.png
+
+backend:
+  name: github
+  repo: rrschauhan07/Portfolio
+  branch: main
+  # Token login only. No OAuth client/server is required for this deployment.
+  auth_methods: [token]
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: writeups
+    label: Writeups
+    label_singular: Writeup
+    folder: src/content/writeups
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    summary: "{{title}} — {{date}}"
+    sortable_fields: [date, title]
+    fields:
+      - { label: Title, name: title, widget: string, maxlength: 220 }
+      - { label: Description, name: description, widget: text, maxlength: 600 }
+      - { label: Date, name: date, widget: datetime, type: date }
+      - {
+          label: Category,
+          name: category,
+          widget: string,
+          maxlength: 60,
+          hint: "Free-form, up to 60 characters. Example: Web Security.",
+        }
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - { label: Featured, name: featured, widget: boolean, default: false }
+      - {
+          label: Draft,
+          name: draft,
+          widget: boolean,
+          default: true,
+          hint: "Drafts are committed to the repository but excluded from the production build.",
+        }
+      - { label: Sample, name: sample, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }
