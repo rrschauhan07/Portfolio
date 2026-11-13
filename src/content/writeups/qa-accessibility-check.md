@@ -6,7 +6,7 @@ category: Research
 tags:
   - qa
 featured: false
-draft: false
+draft: true
 sample: false
 ---
 
