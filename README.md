@@ -1,23 +1,31 @@
-# Rishi Raj Singh Chauhan — Writeups
+# Rishi Raj Singh Chauhan — Portfolio & Writeups
 
-A small, dark editorial site built around two destinations:
+A dark editorial portfolio and writeup site for Rishi Raj Singh Chauhan, built
+with Astro and deployed as a static site on GitHub Pages.
 
-- **Writeups** at `/` — the landing page, with a featured note and the full archive.
-- **About** at `/about/` — a concise profile and contact path.
+- **Live site:** <https://rrschauhan07.tech/>
+- **Online Studio:** <https://rrschauhan07.tech/admin/>
+- **Repository:** <https://github.com/rrschauhan07/Portfolio>
 
-Individual articles live at `/writeups/<slug>/`. There is intentionally no
-`/writeups/` archive route; the Writeups link points straight to `/`.
+The public site has two destinations:
 
-The repository also contains two writing interfaces:
+- **Writeups** at `/` — featured note and the full archive.
+- **About** at `/about/` — profile and contact links.
 
-- **Online Studio** at `/admin/` — a static Sveltia CMS page that signs in with
-  a scoped GitHub token, commits entries to this repository, and triggers the
-  existing GitHub Pages deploy.
-- **Local Studio** — a private, dependency-free Node server for working against
-  the local repository. It is not part of the Astro build and is never
-  deployed.
+Individual writeups live at `/writeups/<slug>/`. The public header intentionally
+links only to Writeups and About.
 
----
+## Features
+
+- Static, fast-loading Astro site with a dark editorial design.
+- Markdown/MDX writeups via Astro content collections.
+- Draft, featured, and sample-content states.
+- RSS feed and automatic sitemap.
+- Custom 404 page.
+- Responsive layout and accessible navigation.
+- Online Studio at `/admin/` for publishing from any browser.
+- Optional local Studio for offline editing without deploying an admin server.
+- GitHub Pages deployment through GitHub Actions.
 
 ## Stack
 
@@ -28,11 +36,13 @@ The repository also contains two writing interfaces:
 | Styling | Hand-written CSS tokens in `src/styles/global.css` |
 | Article styles | `src/styles/prose.css` |
 | Feeds | `@astrojs/rss` and `@astrojs/sitemap` |
-| Online dashboard | [Sveltia CMS](https://sveltiacms.app/) at `public/admin/` |
+| Online dashboard | [Sveltia CMS](https://sveltiacms.app/) in `public/admin/` |
 | Local dashboard | Dependency-free Node HTTP server in `scripts/admin.mjs` |
 | Deployment | GitHub Pages via GitHub Actions |
 
-## Run locally
+## Quick start
+
+Requirements: Node.js 22.23.4+ and npm.
 
 ```bash
 npm install
@@ -41,56 +51,110 @@ npm run dev
 
 The public site runs at <http://localhost:4321>.
 
-To run the local Studio dashboard, use a **second terminal**:
+To use the optional local Studio, run it in a second terminal:
 
 ```bash
 npm run admin
 ```
 
-Local Studio runs at <http://127.0.0.1:4323>. The two servers are separate:
-`npm run admin` does not start the Astro preview.
-
-The online Studio is deployed at <https://rrschauhan07.tech/admin/>. To preview
-its static shell locally, open
-<http://localhost:4321/admin/index.html> — Astro's dev server does not resolve a
-folder path to `index.html` from `public/`. Signing in there still writes to the
-GitHub repository, so use it only when you intend to commit.
+Local Studio runs at <http://127.0.0.1:4323>. It writes directly to
+`src/content/writeups/`; it does not publish anything by itself.
 
 ### Scripts
 
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Start the Astro development site on `:4321` |
-| `npm run admin` | Start the local Studio dashboard on `:4323` |
+| `npm run admin` | Start the local Studio on `:4323` |
 | `npm run build` | Build the static site into `dist/` |
-| `npm run preview` | Preview the built site locally |
+| `npm run preview` | Preview the production build locally |
 | `npm run check` | Run Astro and TypeScript diagnostics |
 
-Set `ADMIN_PORT` to use a different dashboard port. Set `SITE_URL` for the
-canonical URL used by metadata, RSS, and the sitemap:
+Set `SITE_URL` when building for a different canonical domain:
 
 ```bash
 SITE_URL=https://rrschauhan07.tech npm run build
 ```
 
-## Routes
+Set `ADMIN_PORT` to use a different port for the local Studio.
 
-| Route | Output |
-| --- | --- |
-| `/` | Writeups archive and landing page |
-| `/about/` | About page |
-| `/writeups/<slug>/` | Individual article |
-| `/admin/` | Online Studio (Sveltia CMS, token login) |
-| `/rss.xml` | Combined writeups feed |
-| `/404.html` | Custom not-found page |
+## Online Studio: signing in
 
-The public header intentionally links only to Writeups and About. `/admin/` is
-not part of the public navigation and is excluded from indexing with both a
-`noindex` meta tag and `Disallow: /admin/` in `robots.txt`.
+The deployed dashboard is a static Sveltia CMS page. It reads and writes the
+repository through the GitHub API using a fine-grained personal access token.
 
-## Writing content
+> The token is stored in the browser's local storage. Do not sign in on a shared
+> computer. Sign out when finished.
 
-Articles live in `src/content/writeups/`. Each file uses frontmatter like this:
+1. Open <https://rrschauhan07.tech/admin/>.
+2. Choose **Sign In with Token** if you are not already signed in.
+3. Create a fine-grained token at
+   <https://github.com/settings/personal-access-tokens/new>.
+   - **Repository access:** Only select repositories →
+     `rrschauhan07/Portfolio`
+   - **Permissions:** **Contents: Read and write**
+   - **Pull requests: Read and write** is not required for the current
+     simple workflow.
+   - Choose an expiration date and keep a reminder to rotate the token.
+4. GitHub may require a 2FA/sudo confirmation before creating the token.
+5. Copy the token and paste it into the Studio login form.
+
+You normally will not need to enter the token on every visit. You will need to
+sign in again if you sign out, clear browser storage, use another browser or
+device, or the token expires or is revoked.
+
+If a token is lost or exposed, revoke it in GitHub and create a replacement.
+Never commit a token to the repository or paste it into a public issue/chat.
+
+### Why token login?
+
+GitHub OAuth requires a server-side token exchange, which would add another
+service to a deliberately static deployment. A scoped token is sufficient for a
+single-author site and keeps the dashboard on GitHub Pages.
+
+If multiple editors or non-technical users are added later, deploy
+[Sveltia CMS Authenticator](https://github.com/sveltia/sveltia-cms-auth) on
+Cloudflare Workers with a GitHub App, then configure its URL as
+`backend.base_url` in `public/admin/config.yml` and enable the `oauth` method.
+
+## Publishing a writeup
+
+### Online Studio
+
+1. Open <https://rrschauhan07.tech/admin/> and sign in.
+2. Create a new writeup or open an existing one.
+3. Keep **Draft** enabled while writing.
+4. When the note is ready, turn **Draft** off and click **Save**.
+5. Sveltia commits directly to `main`. GitHub Actions rebuilds and deploys the
+   site, usually within 1–2 minutes.
+6. Check the live URL at `/writeups/<slug>/`.
+
+New notes default to drafts. Drafts are committed to the repository but are
+excluded from the production homepage, article routes, RSS feed, and sitemap.
+
+Uploaded images are committed under `public/uploads/` and referenced as
+`/uploads/<filename>`. Use the **Assets** area in Studio to upload and delete
+media.
+
+### Local Studio
+
+1. Run `npm run dev` for the live preview.
+2. Run `npm run admin` in another terminal.
+3. Create or open a note in the local Studio.
+4. Save it as a draft while writing.
+5. Switch it to **Published** when ready.
+6. Preview the article at
+   `http://127.0.0.1:4321/writeups/<slug>/`.
+7. Commit and push the changes. The GitHub Actions workflow deploys them.
+
+The local Studio is intentionally not part of the Astro build and is never
+deployed. Restarting the server invalidates the previous local session; reload
+the dashboard after a restart.
+
+## Writeup format
+
+Writeups live in `src/content/writeups/` as Markdown or MDX files with
+frontmatter:
 
 ```yaml
 ---
@@ -105,169 +169,156 @@ sample: false
 ---
 ```
 
-Categories are free-form, up to 60 characters. Local Studio keeps the category
-list in `src/data/categories.json`; any category already used by a writeup
-remains available even if the file is edited by hand. Online Studio writes the
-category directly into the entry and does not modify `categories.json`.
+The schema is defined in `src/content.config.ts`.
 
-- `draft: true` notes are visible in local development but excluded from the
-  production build.
-- `featured: true` promotes a note to the lead card. The most recent featured
-  note is used first.
-- `sample: true` displays a visible sample-content label. The five bundled
-  notes are samples and should be replaced, edited, or deleted before launch.
+| Field | Meaning |
+| --- | --- |
+| `title` | Article title and metadata title |
+| `description` | Card summary, meta description, and feed description |
+| `date` | Publication date |
+| `updated` | Optional updated date |
+| `category` | Free-form category, up to 60 characters |
+| `tags` | Optional list of tags |
+| `featured` | Promotes the note to the homepage lead card |
+| `draft` | Excludes the note from the production build |
+| `sample` | Shows a visible sample-content label |
 
-## Online Studio — publish from anywhere
+Local Studio keeps its category list in `src/data/categories.json`. Online
+Studio writes the category directly into the entry and does not modify that
+file.
 
-The deployed dashboard is at <https://rrschauhan07.tech/admin/>. It is a static
-[Sveltia CMS](https://sveltiacms.app/) page that reads and writes the repository
-through the GitHub API. It can list, create, edit, and delete writeups, upload
-media, set draft or published status, and mark a note as featured or sample
-content.
+## Routes
 
-### Sign in
+| Route | Output |
+| --- | --- |
+| `/` | Writeups landing page and archive |
+| `/about/` | About page |
+| `/writeups/<slug>/` | Individual article |
+| `/admin/` | Online Studio (Sveltia CMS, token login) |
+| `/rss.xml` | Combined writeup feed |
+| `/sitemap-index.xml` | Sitemap index |
+| `/robots.txt` | Crawler rules |
+| `/404.html` | Custom not-found page |
 
-1. Open <https://rrschauhan07.tech/admin/>.
-2. Choose **Sign In with Token**.
-3. Use the token-generation link shown on the login screen, or create a
-   fine-grained personal access token at
-   <https://github.com/settings/personal-access-tokens/new>. GitHub may ask you
-   to confirm access (sudo mode) with 2FA before it will create a token.
-4. Scope it to **only** the `rrschauhan07/Portfolio` repository and grant:
-   - **Contents: Read and write** — required for reading, committing, and
-     uploading media.
-   - **Pull requests: Read and write** — only needed if editorial workflow is
-     enabled; the current simple workflow does not require it.
-5. Paste the token into the dashboard and sign in.
+There is intentionally no `/writeups/` archive route; Writeups links directly to
+`/`. `/admin/` is excluded from indexing with a `noindex, nofollow` meta tag and
+`Disallow: /admin/` in `robots.txt`.
 
-The token is stored in that browser's local storage. Sign out when using a
-shared computer. If a token is lost or exposed, revoke it on GitHub and create
-a replacement.
-
-### Publish
-
-1. Create a writeup or open an existing one.
-2. Keep **Draft** enabled while writing. Drafts are committed to the repository
-   but excluded from the production build.
-3. When the note is ready, turn **Draft** off and save.
-4. Sveltia commits to `main`. The GitHub Actions workflow rebuilds and deploys
-   the site, usually within 1–2 minutes.
-5. Check the live URL at `/writeups/<slug>/`.
-
-New notes default to drafts. The date field accepts a date-only value. Uploaded
-media is committed under `public/uploads/` and referenced as `/uploads/...`.
-
-### Why token login instead of GitHub OAuth
-
-GitHub OAuth needs a server-side token exchange because the client secret cannot
-be shipped in a static page. This deployment deliberately avoids adding another
-service just for login. A scoped fine-grained token is sufficient for a
-single-author site and keeps the dashboard on GitHub Pages.
-
-If multiple editors or non-technical users are added later, deploy the
-[Sveltia CMS Authenticator](https://github.com/sveltia/sveltia-cms-auth) on
-Cloudflare Workers with a GitHub App, then add its URL as `backend.base_url` in
-`public/admin/config.yml` and enable the `oauth` auth method.
-
-### Security model
-
-- The admin page is public but does nothing without a valid GitHub token.
-- Only a token with read/write access to this repository can load or change
-  content.
-- The token is not in the repository, the Astro build, or the page source.
-- The admin page sends `noindex, nofollow` and `/admin/` is disallowed in
-  `robots.txt`.
-- The public site remains fully static; no file-writing API is exposed.
-
-## Local Studio — optional local dashboard
-
-Local Studio is a small writing interface for the content directory. It can
-list, create, edit, and delete writeups, attach categories and tags, set draft or
-published status, and mark a note as featured or sample content. Categories can
-be created and deleted from the category manager; a category still used by a
-writeup cannot be deleted until those writeups are reassigned or removed.
-
-### Why it is local-only
-
-Local Studio runs on `127.0.0.1` and writes directly to
-`src/content/writeups`. It is intentionally outside `src/` and is not included
-in `dist`. Publishing still requires a Git commit and push. It remains useful
-for offline editing and for managing `src/data/categories.json`.
-
-### Safety model
-
-The local dashboard server:
-
-- binds to `127.0.0.1` only;
-- generates a fresh access token for every server run and embeds it in the
-  served page;
-- rejects unexpected `Host` and `Origin` headers;
-- requires the token on every content API request;
-- accepts JSON only, with a request-size limit;
-- validates slugs, dates, categories, and field lengths;
-- rejects path traversal and unknown file paths;
-- sends CSP, frame, referrer, MIME-sniffing, and no-store security headers.
-
-There is no persistent password or secret in the repository. Restarting the
-server invalidates the previous page session; reload the dashboard after a
-restart.
-
-### Publishing workflow
-
-1. Keep `npm run dev` running for a live preview.
-2. Start `npm run admin` in another terminal.
-3. Create a note, or choose an existing one from the sidebar.
-4. Save it as a **Draft** while writing. Drafts are not included in production.
-5. Set the status to **Published** when it is ready, then save.
-6. Check the preview at `http://127.0.0.1:4321/writeups/<slug>/`.
-7. Commit and push. The GitHub Actions workflow rebuilds and deploys the site.
-
-New notes are drafts by default. Slugs become read-only after the first save so
-article URLs stay stable. Use **Manage** beside the Category field to add custom
-categories or delete categories that no longer have any writeups attached.
-
-## Personalization
-
-Update the placeholders before launch:
-
-- `src/data/site.ts` — name, role, description, email, social links;
-- `src/pages/about.astro` — profile copy and contact details;
-- `src/content/writeups/` — replace the sample notes with real writing;
-- `public/` — favicon, social image, and other static assets.
-
-Do not fill in claims, engagements, locations, or availability unless they are
-verified.
-
-## Build and deploy
+## Build and deployment
 
 ```bash
 npm run check
 SITE_URL=https://rrschauhan07.tech npm run build
 ```
 
-The build output is static and can be hosted anywhere. The existing GitHub Pages
-workflow is in `.github/workflows/deploy.yml`; configure the repository Pages
-settings and set `SITE_URL` for the production domain.
+The output in `dist/` is fully static. Pushing to `main` triggers the GitHub
+Actions workflow in `.github/workflows/deploy.yml`, which builds the site and
+deploys it to GitHub Pages.
 
-The production site is `https://rrschauhan07.tech`. `public/CNAME` carries the
-custom domain. For GitHub Pages, set the custom domain in the repository Pages
-settings, point the apex at GitHub's `A`/`AAAA` records, and point
-`www` at `rrschauhan07.github.io`. Enable **Enforce HTTPS** after DNS verification.
+The production domain is `https://rrschauhan07.tech`. `public/CNAME` contains the
+custom domain. For GitHub Pages:
 
-Local Studio is not copied into `dist/` and has no public route. The online
-Studio is deployed as static files from `public/admin/`; it only reads and
-writes the repository after a GitHub token is supplied.
+1. Set the custom domain in repository **Settings → Pages**.
+2. Point the apex domain at GitHub's `A`/`AAAA` records.
+3. Point `www` at `rrschauhan07.github.io`.
+4. Enable **Enforce HTTPS** after DNS verification.
+
+The workflow uses the repository variable `SITE_URL` when present, falling back
+to `https://rrschauhan07.tech`.
+
+## Troubleshooting
+
+### A published note is not visible
+
+- Check that **Draft** is off in Studio and the change was saved.
+- Check the latest GitHub Actions run in the repository's **Actions** tab.
+- Wait 1–2 minutes after a successful run.
+- Hard-refresh the page (`Ctrl+Shift+R`). GitHub Pages caches HTML for up to
+  10 minutes.
+- Confirm the note exists at `src/content/writeups/<slug>.md` and that its
+  `draft` field is `false`.
+
+### The sample-content banner appears
+
+The banner is shown only when the note has `sample: true`. Set it to `false` in
+Studio and save, then hard-refresh the page.
+
+### An older deployment was canceled
+
+A newer commit supersedes an older deployment. Check the latest workflow run,
+not a canceled intermediate run. Wait for the latest run to complete successfully.
+
+### Studio asks for a token again
+
+This is expected after signing out, clearing browser storage, using another
+browser/device, or when the token expires or is revoked. Create a new fine-grained
+token with **Contents: Read and write** access to this repository.
+
+### Images are not loading
+
+- Confirm the file is present under `public/uploads/`.
+- Use the `/uploads/<filename>` path in the Markdown.
+- Wait for the deployment to finish.
+- Avoid spaces in new filenames when possible; URL-encode existing paths.
+
+## Security notes
+
+- The admin page is public but does nothing without a valid GitHub token.
+- The token is not stored in the repository, the Astro build, or the page source.
+- Only a token with read/write access to this repository can load or change
+  content.
+- The public site is fully static; no file-writing API is exposed.
+- GitHub Pages does not provide custom CSP or HSTS response headers. The local
+  Studio sends stricter security headers because it runs its own Node server.
+- `/admin/` sends `noindex, nofollow` and is disallowed in `robots.txt`.
+
+## Project structure
+
+```text
+.
+├── .github/workflows/deploy.yml   # GitHub Pages build and deploy
+├── public/
+│   ├── admin/                     # Online Studio (Sveltia CMS)
+│   ├── brand/                     # Brand assets
+│   ├── uploads/                   # Media uploaded through Studio
+│   └── CNAME                      # Custom domain
+├── scripts/
+│   ├── admin.mjs                  # Local-only Studio server
+│   └── admin/                     # Local Studio UI and assets
+├── src/
+│   ├── components/                # Header, footer, article components
+│   ├── content/writeups/          # Markdown/MDX writeups
+│   ├── content.config.ts          # Writeup schema
+│   ├── data/                      # Site identity and local categories
+│   ├── layouts/                   # Base HTML layout
+│   ├── pages/                     # Astro routes
+│   └── styles/                    # Global and prose styles
+├── astro.config.mjs               # Site URL and integrations
+└── package.json
+```
+
+## Customization
+
+- `src/data/site.ts` — name, role, description, email, social links, navigation.
+- `src/pages/about.astro` — profile copy and contact details.
+- `src/components/` — header, footer, cards, and article UI.
+- `src/styles/global.css` — design tokens and layout styles.
+- `src/styles/prose.css` — article typography and Markdown styles.
+- `public/` — favicon, social image, brand assets, and other static files.
+
+Do not add claims, engagements, locations, or availability unless they are
+verified.
 
 ## QA checklist
 
-Before publishing:
+Before publishing a change:
 
 - Check `/`, `/about/`, an article, and `/404.html`.
-- Check the layout at desktop and mobile widths.
-- Confirm navigation contains only Writeups and About.
+- Check desktop and mobile widths.
+- Confirm public navigation contains only Writeups and About.
 - Confirm drafts are absent from the production build.
-- Confirm the RSS feed and sitemap contain only published pages.
-- Confirm `/admin/` loads, sends `noindex`, and asks for a token before showing
-  any content.
+- Confirm RSS and the sitemap contain only published pages.
+- Confirm `/admin/` loads, sends `noindex`, and asks for a token when signed out.
 - Confirm `/admin/` is absent from the sitemap and disallowed by `robots.txt`.
 - Confirm no local `scripts/admin` assets appear in `dist/`.
+- Run `npm run check` and a production build.
