@@ -1,12 +1,12 @@
 ---
-title: dsvvds
-description: vdsv
+title: Upcoming...
+description: Wait for it....
 date: 2026-11-13
-category: vdsv
+category: Some CVE
 tags: []
 featured: true
 draft: false
 sample: false
 ---
 
-cascsacacsdcsdcdsc![](/uploads/Screenshot%202026-05-01%20024720.png)csa
+Maybe PHP or Microsoft Outlook
